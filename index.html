@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Styles Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Titillium Web', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #303030;
+            background-color: white;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 0.6rem;
+            height: 0.5rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #69b244, #004393);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .game-section {
+            background: white;
+            padding: 2% 3%;
+            width: 100%;
+            min-height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .game-title {
+            color: #004393;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .intro-text {
+            color: #303030;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            font-weight: normal;
+        }
+
+        .scenario-container {
+            margin-bottom: 3rem;
+            padding: 2rem 2rem;
+            background: #fafbfc;
+            border-radius: 0.75rem;
+            border-left: 0.25rem solid #69b244;
+            box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.06);
+        }
+
+        .scenario-title {
+            color: #004393;
+            font-size: 1.3em;
+            font-weight: normal;
+            margin-bottom: 1rem;
+        }
+
+        .scenario-text {
+            color: #303030;
+            margin-bottom: 1rem;
+            font-weight: normal;
+            line-height: 1.6;
+        }
+
+        .question-text {
+            color: #004393;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            font-size: 1.05em;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .option-card {
+            background: #ffffff;
+            border: 0.0625rem solid #d1d9e6;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 4rem;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .option-card:hover {
+            transform: translateY(-0.0625rem);
+            box-shadow: 0 0.25rem 1rem rgba(0, 67, 147, 0.12);
+            border-color: #004393;
+        }
+
+        .option-card.selected {
+            background: #f0f7ff;
+            border-color: #004393;
+            border-width: 0.125rem;
+        }
+
+        .option-card.correct {
+            background: #e8f5e8;
+            border-color: #a8d4a8;
+            color: #2d5016;
+        }
+
+        .option-card.incorrect {
+            background: #fdeaea;
+            border-color: #e8a1a1;
+            color: #8b2635;
+        }
+
+        .option-text {
+            flex: 1;
+            font-weight: normal;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .status-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .option-card.correct .status-icon {
+            display: flex;
+            background: #69b244;
+        }
+
+        .option-card.incorrect .status-icon {
+            display: flex;
+            background: #dc3545;
+        }
+
+        .explanation-container {
+            background: #f0f7ff;
+            border: 0.0625rem solid #b3d4fc;
+            border-radius: 0.625rem;
+            padding: 1.25rem;
+            margin-top: 1.25rem;
+            display: none;
+        }
+
+        .explanation-title {
+            color: #004393;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
+            font-size: 1.05em;
+        }
+
+        .explanation-text {
+            color: #2c5aa0;
+            line-height: 1.6;
+            font-weight: normal;
+        }
+
+        .check-answers-btn {
+            background: #004393;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .check-answers-btn:hover {
+            background: #003366;
+        }
+
+        .check-answers-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background: #69b244;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-left: 0.625rem;
+        }
+
+        .reset-btn:hover {
+            background: #5a9e3a;
+        }
+
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .scenario-container {
+                padding: 1.25rem;
+            }
+            
+            .option-card {
+                min-height: 6.25rem;
+            }
+            
+            .game-section {
+                padding: 1% 2%;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="game-section">
+    <h1 class="game-title" id="gameTitle">Food for Thought</h1>
+    <div class="progress-bar">
+     <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <!-- Scenario 1 -->
+    <div class="scenario-container">
+     <h2 class="scenario-title">Scenario 1</h2>
+     <p class="scenario-text">
+        You need to have a conversation with a Green colleague about a collaborative project. Greens value harmony, patience, and supportive interactions.
+     </p>
+     <p class="question-text">Which of the following approaches is most effective? Select all that apply.</p>
+
+     <div class="options-container" data-scenario="1">
+      <div class="option-card" data-correct="true" data-option="a">
+        <span class="option-text">Be patient and give them time to express their ideas and concerns.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="b">
+        <span class="option-text">Focus on presenting your point quickly without waiting for their input.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="c">
+        <span class="option-text">Expect them to make quick decisions during the meeting.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="d">
+        <span class="option-text">Start with small talk to build rapport before addressing the project.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="e">
+        <span class="option-text">Reassure them that you’re there to support them and work together as a team.</span>
+        <div class="status-icon">✓</div>
+      </div>
+     </div>
+
+     <button class="check-answers-btn" onclick="checkAnswers(1)">Check Answers</button>
+     <button class="reset-btn" onclick="resetScenario(1)">Reset</button>
+
+     <div class="explanation-container" id="explanation-1">
+      <div class="explanation-title">Explanation:</div>
+      <div class="explanation-text">
+        Green communicators appreciate patience, emotional safety, and collaboration. Giving them time, building rapport, and offering support creates a trusting environment that leads to productive teamwork.
+      </div>
+     </div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-container">
+     <h2 class="scenario-title">Scenario 2</h2>
+     <p class="scenario-text">
+        You are going to have a meeting with a Yellow person. Yellows thrive on energy, inspiration, connection, and creative flow.
+     </p>
+     <p class="question-text">Which of the following approaches will be most effective? Select all that apply.</p>
+
+     <div class="options-container" data-scenario="2">
+      <div class="option-card" data-correct="true" data-option="a">
+        <span class="option-text">Be prepared to take more time than scheduled.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="b">
+        <span class="option-text">Engage them with enthusiasm and energy, focusing on big-picture ideas.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="c">
+        <span class="option-text">Stick strictly to the agenda and avoid any off-topic conversations to stay on track.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="d">
+        <span class="option-text">Make sure to outline a detailed step-by-step plan to ensure clarity and minimize surprises.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="e">
+        <span class="option-text">Use humor and light-hearted conversation to build rapport.</span>
+        <div class="status-icon">✓</div>
+      </div>
+     </div>
+
+     <button class="check-answers-btn" onclick="checkAnswers(2)">Check Answers</button>
+     <button class="reset-btn" onclick="resetScenario(2)">Reset</button>
+
+     <div class="explanation-container" id="explanation-2">
+      <div class="explanation-title">Explanation:</div>
+      <div class="explanation-text">
+        Yellow communicators respond best to positivity, flexibility, and creative engagement. Allowing extra time, using enthusiasm, and building rapport help encourage their natural strengths while fostering collaboration.
+      </div>
+     </div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-container">
+     <h2 class="scenario-title">Scenario 3</h2>
+     <p class="scenario-text">
+        You are advising a Red client on a proposal. Reds value efficiency, clarity, confidence, and direct results.
+     </p>
+     <p class="question-text">Which of the following approaches is most effective? Select all that apply.</p>
+
+     <div class="options-container" data-scenario="3">
+      <div class="option-card" data-correct="false" data-option="a">
+        <span class="option-text">Use social proof to emphasize that others in their industry have taken similar advice.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="b">
+        <span class="option-text">Provide many background details and context before offering your main advice.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="c">
+        <span class="option-text">Highlight their authority by complimenting and acknowledging their expertise and leadership in the field.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="d">
+        <span class="option-text">Present your advice concisely, focusing on clear goals and actionable steps.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="e">
+        <span class="option-text">Frame your advice as a unique and exclusive opportunity that sets them apart from others.</span>
+        <div class="status-icon">✓</div>
+      </div>
+     </div>
+
+     <button class="check-answers-btn" onclick="checkAnswers(3)">Check Answers</button>
+     <button class="reset-btn" onclick="resetScenario(3)">Reset</button>
+
+     <div class="explanation-container" id="explanation-3">
+      <div class="explanation-title">Explanation:</div>
+      <div class="explanation-text">
+        Red communicators prefer directness, efficiency, and a results-driven focus. Speaking clearly, acknowledging their strengths, and presenting bold, exclusive opportunities keeps them engaged and motivated.
+      </div>
+     </div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario-container">
+     <h2 class="scenario-title">Scenario 4</h2>
+     <p class="scenario-text">
+        You are preparing to present a new idea to a Blue colleague. Blues appreciate accuracy, structure, thoroughness, and data-backed reasoning.
+     </p>
+     <p class="question-text">
+        Which actions will most likely ensure effective communication? Select all that apply.
+     </p>
+
+     <div class="options-container" data-scenario="4">
+      <div class="option-card" data-correct="true" data-option="a">
+        <span class="option-text">Allow time for them to review the details and ask clarifying questions.</span>
+        <div class="status-icon">✓</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="b">
+        <span class="option-text">Push them to make a decision quickly to maintain momentum.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="c">
+        <span class="option-text">Emphasize the emotional and creative aspects of the idea.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="false" data-option="d">
+        <span class="option-text">Keep the presentation brief and avoid overloading them with information.</span>
+        <div class="status-icon">✗</div>
+      </div>
+
+      <div class="option-card" data-correct="true" data-option="e">
+        <span class="option-text">Be prepared to share detailed data and evidence to support your proposal.</span>
+        <div class="status-icon">✓</div>
+      </div>
+     </div>
+
+     <button class="check-answers-btn" onclick="checkAnswers(4)">Check Answers</button>
+     <button class="reset-btn" onclick="resetScenario(4)">Reset</button>
+
+     <div class="explanation-container" id="explanation-4">
+      <div class="explanation-title">Explanation:</div>
+      <div class="explanation-text">
+        Blue communicators rely on precision, facts, and logic. Allowing time for analysis and providing detailed evidence ensures they feel confident, informed, and respected during decision-making.
+      </div>
+     </div>
+    </div>
+
+   </div>
+  </div>
+
+  <script>
+        const defaultConfig = {
+            game_title: "Food for Thought"
+        };
+
+        let selectedAnswers = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const optionCards = document.querySelectorAll('.option-card');
+            
+            optionCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const scenario = this.closest('.options-container').dataset.scenario;
+                    const option = this.dataset.option;
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        if (selectedAnswers[scenario]) {
+                            const index = selectedAnswers[scenario].indexOf(option);
+                            if (index > -1) {
+                                selectedAnswers[scenario].splice(index, 1);
+                            }
+                        }
+                    } else {
+                        this.classList.add('selected');
+                        if (!selectedAnswers[scenario]) {
+                            selectedAnswers[scenario] = [];
+                        }
+                        selectedAnswers[scenario].push(option);
+                    }
+                });
+            });
+
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: async (config) => {
+                        document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["game_title", config.game_title || defaultConfig.game_title]
+                    ])
+                });
+            }
+        });
+
+        function checkAnswers(scenarioNum) {
+            const container = document.querySelector(`[data-scenario="${scenarioNum}"]`).parentElement;
+            const optionCards = container.querySelectorAll('.option-card');
+            const explanation = document.getElementById(`explanation-${scenarioNum}`);
+            
+            optionCards.forEach(card => {
+                const isCorrect = card.dataset.correct === 'true';
+                const isSelected = card.classList.contains('selected');
+                
+                if (isCorrect) {
+                    card.classList.add('correct');
+                } else if (isSelected) {
+                    card.classList.add('incorrect');
+                }
+                
+                card.style.pointerEvents = 'none';
+            });
+            
+            explanation.style.display = 'block';
+            
+            const checkBtn = container.querySelector('.check-answers-btn');
+            checkBtn.disabled = true;
+            
+            updateProgress();
+        }
+
+        function resetScenario(scenarioNum) {
+            const container = document.querySelector(`[data-scenario="${scenarioNum}"]`).parentElement;
+            const optionCards = container.querySelectorAll('.option-card');
+            const explanation = document.getElementById(`explanation-${scenarioNum}`);
+            
+            optionCards.forEach(card => {
+                card.classList.remove('selected', 'correct', 'incorrect');
+                card.style.pointerEvents = 'auto';
+            });
+            
+            explanation.style.display = 'none';
+            selectedAnswers[scenarioNum] = [];
+            
+            const checkBtn = container.querySelector('.check-answers-btn');
+            checkBtn.disabled = false;
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalScenarios = 4;
+            const completedScenarios = document.querySelectorAll('.check-answers-btn:disabled').length;
+            const progressPercentage = (completedScenarios / totalScenarios) * 100;
+            
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = progressPercentage + '%';
+        }
+    </script>
+
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99864221d0a5c079',t:'MTc2MjExNDA0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+
+ </body>
+</html>
